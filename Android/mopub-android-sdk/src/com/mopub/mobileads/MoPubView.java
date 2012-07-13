@@ -85,8 +85,10 @@ public class MoPubView extends FrameLayout {
 
     protected AdView mAdView;
     protected BaseAdapter mAdapter;
-    
+    private Object mCustomEventHandler;
+
     private Context mContext;
+    private Activity mActivity;
     private BroadcastReceiver mScreenStateReceiver;
     private boolean mIsInForeground;
     private LocationAwareness mLocationAwareness;
@@ -388,9 +390,17 @@ public class MoPubView extends FrameLayout {
     }
 
     public Activity getActivity() {
-        return (Activity) mContext;
+    	if(mActivity != null) return mActivity;
+    	if(mContext != null && mContext instanceof Activity) {
+    		return (Activity) mContext;
+    	}
+    	return null;
     }
 
+    public void setActivity(Activity aActivity) {
+    	mActivity = aActivity;
+    }
+    
     public void setOnAdWillLoadListener(OnAdWillLoadListener listener) {
         mOnAdWillLoadListener = listener;
     }
@@ -446,5 +456,13 @@ public class MoPubView extends FrameLayout {
     
     public void setAdContentView(View view) {
         if (mAdView != null) mAdView.setAdContentView(view);
+    }
+    
+    public Object getCustomEventHandler() {
+    	return mCustomEventHandler;
+    }
+    
+    public void setCustomEventHandler(Object aCustomEventHandler) {
+    	mCustomEventHandler = aCustomEventHandler;
     }
 }

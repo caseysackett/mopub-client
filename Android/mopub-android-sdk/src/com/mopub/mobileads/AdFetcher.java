@@ -383,8 +383,22 @@ public class AdFetcher {
             String methodName = mHeader.getValue();
             Log.i("MoPub", "Trying to call method named " + methodName);
             
-            Class<? extends Activity> c;
+            Class<? extends Object> c;
             Method method;
+            
+            Object eventHandler = mpv.getCustomEventHandler();
+            try {
+                c = eventHandler.getClass();
+                method = c.getMethod(methodName, MoPubView.class);
+                method.invoke(eventHandler, mpv);
+                return;
+            } catch (NoSuchMethodException e) {
+                Log.d("MoPub", "Couldn't perform custom method named " + methodName +
+                        "(MoPubView view) because your CustomEventHandler class has no such method");
+            } catch (Exception e) {
+                Log.d("MoPub", "Couldn't perform custom method named " + methodName);
+            }
+            
             Activity userActivity = mpv.getActivity();
             try {
                 c = userActivity.getClass();
