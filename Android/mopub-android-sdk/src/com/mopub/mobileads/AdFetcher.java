@@ -388,15 +388,17 @@ public class AdFetcher {
             
             Object eventHandler = mpv.getCustomEventHandler();
             try {
-                c = eventHandler.getClass();
-                method = c.getMethod(methodName, MoPubView.class);
-                method.invoke(eventHandler, mpv);
-                return;
+            	if(eventHandler != null) {
+	                c = eventHandler.getClass();
+	                method = c.getMethod(methodName, MoPubView.class);
+	                method.invoke(eventHandler, mpv);
+	                return;
+            	}
             } catch (NoSuchMethodException e) {
                 Log.d("MoPub", "Couldn't perform custom method named " + methodName +
                         "(MoPubView view) because your CustomEventHandler class has no such method");
             } catch (Exception e) {
-                Log.d("MoPub", "Couldn't perform custom method named " + methodName);
+                Log.d("MoPub", "Couldn't perform custom method named " + methodName + ". " + e.getMessage());
             }
             
             Activity userActivity = mpv.getActivity();
@@ -409,7 +411,7 @@ public class AdFetcher {
                         "(MoPubView view) because your activity class has no such method");
                 return;
             } catch (Exception e) {
-                Log.d("MoPub", "Couldn't perform custom method named " + methodName);
+                Log.d("MoPub", "Couldn't perform custom method named " + methodName + ". " + e.getMessage());
                 return;
             }
         }
