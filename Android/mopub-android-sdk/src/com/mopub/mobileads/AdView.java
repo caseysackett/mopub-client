@@ -93,7 +93,10 @@ public class AdView extends WebView {
     private Location mLocation;
     private boolean mIsLoading;
     private boolean mAutorefreshEnabled;
-    private int mRefreshTimeMilliseconds = 60000;
+    private int mRefreshTimeMilliseconds = 30000;
+    private long mLastAdFiredAt;
+    private long mTimeRemainingAfterPause;
+    private boolean mTimerIsRunning;
     private int mTimeoutMilliseconds = HTTP_CLIENT_TIMEOUT_MILLISECONDS;
     private int mWidth;
     private int mHeight;
@@ -114,7 +117,8 @@ public class AdView extends WebView {
         
         mMoPubView = view;
         mAutorefreshEnabled = true;
-        
+        mLastAdFiredAt = (new Date()).getTime();
+
         /* Store user agent string at beginning to prevent NPE during background
          * thread operations.
          */
@@ -234,6 +238,7 @@ public class AdView extends WebView {
     }
     
     public void loadAd() {
+        mLastAdFiredAt = (new Date()).getTime();
         if (mAdUnitId == null) {
             Log.d("MoPub", "Can't load an ad in this ad view because the ad unit ID is null. " + 
                     "Did you forget to call setAdUnitId()?");
@@ -670,15 +675,25 @@ public class AdView extends WebView {
     };
 
     protected void scheduleRefreshTimerIfEnabled() {
-        cancelRefreshTimer();
+    	if(mTimerIsRunning) cancelRefreshTimer();
         if (!mAutorefreshEnabled || mRefreshTimeMilliseconds <= 0) return;
-        mRefreshHandler.postDelayed(mRefreshRunnable, mRefreshTimeMilliseconds);
+        if(mTimeRemainingAfterPause > 0) {
+        	Log.d("MoPub.AdView", "RESCHEDULING TIMER VALUE OF " + mTimeRemainingAfterPause);
+        	mRefreshHandler.postDelayed(mRefreshRunnable, mTimeRemainingAfterPause);
+        } else {
+        	Log.d("MoPub.AdView", "RESCEDULING TIMER VALUE TO ORIGINAL " + mRefreshTimeMilliseconds);
+        	mRefreshHandler.postDelayed(mRefreshRunnable, mRefreshTimeMilliseconds);
+        }
+        mTimerIsRunning = true;
     }
 
     protected void cancelRefreshTimer() {
+    	Date now = new Date();
+    	mTimeRemainingAfterPause = mRefreshTimeMilliseconds - (now.getTime() - mLastAdFiredAt);
         mRefreshHandler.removeCallbacks(mRefreshRunnable);
+        mTimerIsRunning = false;
     }
-
+    
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public String getKeywords() {
