@@ -391,20 +391,24 @@ public class AdView extends WebView {
      */
     @Override
     public void loadUrl(String url) {
-        if (url.startsWith("javascript:")) {
-            super.loadUrl(url);
-            return;
-        }
-
-        if (mIsLoading) {
-            Log.i("MoPub", "Already loading an ad for " + mAdUnitId + ", wait to finish.");
-            return;
-        }
-        
-        mUrl = url;
-        mIsLoading = true;
-        
-        mAdFetcher.fetchAdForUrl(mUrl);
+    	try {
+	        if (url.startsWith("javascript:")) {
+	            super.loadUrl(url);
+	            return;
+	        }
+	
+	        if (mIsLoading) {
+	            Log.i("MoPub", "Already loading an ad for " + mAdUnitId + ", wait to finish.");
+	            return;
+	        }
+	        
+	        mUrl = url;
+	        mIsLoading = true;
+	        
+	        mAdFetcher.fetchAdForUrl(mUrl);
+    	} catch(Throwable t) {
+    		Log.e("MoPub WebView", t.getMessage(), t);
+    	}
     }
     
     protected void configureAdViewUsingHeadersFromHttpResponse(HttpResponse response) {
