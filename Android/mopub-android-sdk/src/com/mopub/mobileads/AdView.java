@@ -478,11 +478,15 @@ public class AdView extends WebView {
     }
     
     private void adDidLoad() {
-        Log.i("MoPub", "Ad successfully loaded.");
-        mIsLoading = false;
-        scheduleRefreshTimerIfEnabled();
-        setAdContentView(this);
-        mMoPubView.adLoaded();
+    	try {
+	        Log.i("MoPub", "Ad successfully loaded.");
+	        mIsLoading = false;
+	        scheduleRefreshTimerIfEnabled();
+	        setAdContentView(this);
+	        mMoPubView.adLoaded();
+    	} catch(Throwable t) {
+    		Log.e("MoPub AdView", t.getMessage(), t);
+    	}
     }
     
     public void setAdContentView(View view) {
