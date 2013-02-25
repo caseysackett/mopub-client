@@ -70,7 +70,7 @@ public class MillennialAdapter extends BaseAdapter implements MMAdListener {
     @Override
     public void init(MoPubView view, String jsonParams) {
         super.init(view, jsonParams);
-        mActivityReference = new WeakReference<Activity>((Activity)view.getContext());
+        mActivityReference = new WeakReference<Activity>((Activity)view.getActivity());
     }
 
     @Override
