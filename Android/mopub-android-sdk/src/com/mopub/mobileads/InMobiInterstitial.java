@@ -31,6 +31,7 @@ public class InMobiInterstitial extends CustomEventInterstitial implements IMAdI
             activity = (Activity) context;
         } else {
             // You may also pass in an Activity Context in the localExtras map and retrieve it here.
+        	activity = (Activity)localExtras.get("activity");
         }
         
         if (activity == null) {
@@ -42,8 +43,7 @@ public class InMobiInterstitial extends CustomEventInterstitial implements IMAdI
          * You may also pass this String down in the serverExtras Map by specifying Custom Event Data
          * in MoPub's web interface.
          */
-        String inMobiAppId = "YOUR_INMOBI_APP_ID";
-        mInMobiInterstitial = new IMAdInterstitial(activity, inMobiAppId);
+        mInMobiInterstitial = new IMAdInterstitial(activity, serverExtras.get("app_id"));
         
         mInMobiInterstitial.setIMAdInterstitialListener(this);
         mInMobiInterstitial.loadNewAd();

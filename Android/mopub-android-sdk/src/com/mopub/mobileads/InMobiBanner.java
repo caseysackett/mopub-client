@@ -31,6 +31,7 @@ public class InMobiBanner extends CustomEventBanner implements IMAdListener {
             activity = (Activity) context;
         } else {
             // You may also pass in an Activity Context in the localExtras map and retrieve it here.
+        	activity = (Activity)localExtras.get("activity");
         }
         
         if (activity == null) {
@@ -42,8 +43,7 @@ public class InMobiBanner extends CustomEventBanner implements IMAdListener {
          * You may also pass this String down in the serverExtras Map by specifying Custom Event Data
          * in MoPub's web interface.
          */
-        String inMobiAppId = "YOUR_INMOBI_APP_ID";
-        mInMobiBanner = new IMAdView(activity, IMAdView.INMOBI_AD_UNIT_320X50, inMobiAppId);
+        mInMobiBanner = new IMAdView(activity, IMAdView.INMOBI_AD_UNIT_320X50, serverExtras.get("app_id"));
         
         mInMobiBanner.setIMAdListener(this);
         mInMobiBanner.loadNewAd();
@@ -51,7 +51,9 @@ public class InMobiBanner extends CustomEventBanner implements IMAdListener {
 
     @Override
     public void onInvalidate() {
-        mInMobiBanner.setIMAdListener(null);
+    	if(mInMobiBanner != null) {
+    		mInMobiBanner.setIMAdListener(null);
+    	}
     }
 
     /*
@@ -59,11 +61,11 @@ public class InMobiBanner extends CustomEventBanner implements IMAdListener {
      */
     @Override
     public void onAdRequestCompleted(IMAdView adView) {
-        if (mInMobiBanner != null) {
+        if (mInMobiBanner != null && mBannerListener != null) {
             Log.d("MoPub", "InMobi banner ad loaded successfully. Showing ad...");
             mBannerListener.onAdLoaded();
             mBannerListener.setAdContentView(mInMobiBanner);
-        } else {
+        } else if (mBannerListener != null) {
             mBannerListener.onAdFailed();
         }
     }
@@ -71,7 +73,9 @@ public class InMobiBanner extends CustomEventBanner implements IMAdListener {
     @Override
     public void onAdRequestFailed(IMAdView adView, ErrorCode errorCode) {
         Log.d("MoPub", "InMobi banner ad failed to load.");
-        mBannerListener.onAdFailed();
+    	if(mBannerListener != null) {
+    		mBannerListener.onAdFailed();
+    	}
     }
 
     @Override
@@ -82,12 +86,16 @@ public class InMobiBanner extends CustomEventBanner implements IMAdListener {
     @Override
     public void onLeaveApplication(IMAdView adView) {
         Log.d("MoPub", "InMobi banner ad click has left the application context.");
-        mBannerListener.onLeaveApplication();
+    	if(mBannerListener != null) {
+    		mBannerListener.onLeaveApplication();
+    	}
     }
 
     @Override
     public void onShowAdScreen(IMAdView adView) {
         Log.d("MoPub", "InMobi banner ad clicked.");
-        mBannerListener.onClick();
+    	if(mBannerListener != null) {
+    		mBannerListener.onClick();
+    	}
     }
 }

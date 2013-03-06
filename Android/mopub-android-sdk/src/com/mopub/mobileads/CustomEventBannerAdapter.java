@@ -54,6 +54,7 @@ public class CustomEventBannerAdapter extends BaseAdapter implements CustomEvent
     public void loadAd() {
         if (isInvalidated() || mCustomEventBanner == null) return;
         
+        mLocalExtras.put("activity", mMoPubView.getActivity());
         mCustomEventBanner.loadAd(mContext, this, mLocalExtras, mServerExtras);
     }
 
