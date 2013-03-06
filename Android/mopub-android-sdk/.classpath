@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="libs/InMobiAdNetwork_3.6.2.jar"/>
 	<classpathentry kind="lib" path="libs/InMobiCommons_3.6.1.jar"/>
 	<classpathentry kind="lib" path="libs/greystripe-android-sdk-2.1.jar"/>
+	<classpathentry kind="lib" path="libs/amazon-ads-4.0.8.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
