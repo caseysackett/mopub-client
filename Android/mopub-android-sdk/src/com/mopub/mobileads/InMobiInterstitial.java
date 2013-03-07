@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.inmobi.androidsdk.IMAdInterstitial;
 import com.inmobi.androidsdk.IMAdInterstitialListener;
+import com.inmobi.androidsdk.IMAdView;
 import com.inmobi.androidsdk.IMAdRequest.ErrorCode;
 import com.mopub.mobileads.CustomEventInterstitial;
 
@@ -39,11 +40,14 @@ public class InMobiInterstitial extends CustomEventInterstitial implements IMAdI
             return;
         }
         
-        /*
-         * You may also pass this String down in the serverExtras Map by specifying Custom Event Data
-         * in MoPub's web interface.
-         */
-        mInMobiInterstitial = new IMAdInterstitial(activity, serverExtras.get("app_id"));
+        String appId = serverExtras.get("app_id");
+        if(appId == null) {
+            Log.d("MoPub", "InMobi interstitial ad app_id is missing.");
+            interstitialListener.onAdFailed();
+            return;
+        }
+        
+        mInMobiInterstitial = new IMAdInterstitial(activity, appId);
         
         mInMobiInterstitial.setIMAdInterstitialListener(this);
         mInMobiInterstitial.loadNewAd();

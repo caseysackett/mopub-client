@@ -26,11 +26,14 @@ public class GreystripeInterstitial extends CustomEventInterstitial implements G
             Map<String, Object> localExtras, Map<String, String> serverExtras) {
         mInterstitialListener = interstitialListener;
 
-        /*
-         * You may also pass this String down in the serverExtras Map by specifying Custom Event Data
-         * in MoPub's web interface.
-         */
-        mGreystripeAd = new GSFullscreenAd(context, serverExtras.get("app_id"));
+        String appId = serverExtras.get("app_id");
+        if(appId == null) {
+            Log.d("MoPub", "Greystripe interstitial ad app_id is missing.");
+            interstitialListener.onAdFailed();
+            return;
+        }
+        
+        mGreystripeAd = new GSFullscreenAd(context, appId);
         mGreystripeAd.addListener(this);
         
         mGreystripeAd.fetch();

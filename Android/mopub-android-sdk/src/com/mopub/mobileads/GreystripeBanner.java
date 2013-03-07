@@ -25,11 +25,14 @@ public class GreystripeBanner extends CustomEventBanner implements GSAdListener 
             Map<String, Object> localExtras, Map<String, String> serverExtras) {
         mBannerListener = bannerListener;
         
-        /*
-         * You may also pass this String down in the serverExtras Map by specifying Custom Event Data
-         * in MoPub's web interface.
-         */
-        mGreystripeAd = new GSMobileBannerAdView(context, serverExtras.get("app_id"));
+        String appId = serverExtras.get("app_id");
+        if(appId == null) {
+            Log.d("MoPub", "Greystripe banner ad app_id is missing.");
+            mBannerListener.onAdFailed();
+            return;
+        }
+        
+        mGreystripeAd = new GSMobileBannerAdView(context, appId);
         mGreystripeAd.addListener(this);
         
         mGreystripeAd.refresh();

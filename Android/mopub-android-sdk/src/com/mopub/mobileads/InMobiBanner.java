@@ -9,7 +9,6 @@ import android.util.Log;
 import com.inmobi.androidsdk.IMAdListener;
 import com.inmobi.androidsdk.IMAdRequest.ErrorCode;
 import com.inmobi.androidsdk.IMAdView;
-import com.mopub.mobileads.CustomEventBanner;
 
 /*
  * Tested with InMobi SDK 3.6.2.
@@ -17,6 +16,7 @@ import com.mopub.mobileads.CustomEventBanner;
 public class InMobiBanner extends CustomEventBanner implements IMAdListener {
     private CustomEventBanner.Listener mBannerListener;
     private IMAdView mInMobiBanner;
+    private int mAdSize;
 
     /*
      * Abstract methods from CustomEventBanner
@@ -43,8 +43,19 @@ public class InMobiBanner extends CustomEventBanner implements IMAdListener {
          * You may also pass this String down in the serverExtras Map by specifying Custom Event Data
          * in MoPub's web interface.
          */
-        mInMobiBanner = new IMAdView(activity, IMAdView.INMOBI_AD_UNIT_320X50, serverExtras.get("app_id"));
+        int widthPixels = context.getResources().getDisplayMetrics().widthPixels;
+        mAdSize = IMAdView.INMOBI_AD_UNIT_320X50;
+        if(widthPixels >= 600) mAdSize = IMAdView.INMOBI_AD_UNIT_468X60; 	// Kindle Fire
+        if(widthPixels == 728) mAdSize = IMAdView.INMOBI_AD_UNIT_728X90;		// Only if it matches exactly
+
+        String appId = serverExtras.get("app_id");
+        if(appId == null) {
+            Log.d("MoPub", "InMobi banner ad app_id is missing.");
+            mBannerListener.onAdFailed();
+            return;
+        }
         
+        mInMobiBanner = new IMAdView(activity, mAdSize, appId);
         mInMobiBanner.setIMAdListener(this);
         mInMobiBanner.loadNewAd();
     }
@@ -73,9 +84,9 @@ public class InMobiBanner extends CustomEventBanner implements IMAdListener {
     @Override
     public void onAdRequestFailed(IMAdView adView, ErrorCode errorCode) {
         Log.d("MoPub", "InMobi banner ad failed to load.");
-    	if(mBannerListener != null) {
-    		mBannerListener.onAdFailed();
-    	}
+	    if(mBannerListener != null) {
+	    	mBannerListener.onAdFailed();
+	    }
     }
 
     @Override

@@ -47,7 +47,13 @@ public class AmazonBanner extends CustomEventBanner implements AdListener {
         if(widthPixels == 728) adSize = AdLayout.AdSize.AD_SIZE_728x90;		// Only if it matches exactly, since 728 scrolls on 800px wide Kindle Fire HD 7"
         if(widthPixels >= 1024) adSize = AdLayout.AdSize.AD_SIZE_1024x50; 	// Kindle Fire HD
         
-        AdRegistration.setAppKey(context, serverExtras.get("app_id"));
+        String appId = serverExtras.get("app_id");
+        if(appId == null) {
+            Log.d("MoPub", "Amazon banner ad app_id is missing.");
+            mBannerListener.onAdFailed();
+            return;
+        }
+        AdRegistration.setAppKey(context, appId);
 //        AdRegistration.enableTesting(context, true);
 //        AdRegistration.enableLogging(context, true);
         
