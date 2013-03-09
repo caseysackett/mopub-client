@@ -3,6 +3,8 @@ package com.mopub.mobileads;
 import java.util.Map;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.greystripe.sdk.GSAd;
@@ -27,20 +29,31 @@ public class GreystripeBanner extends CustomEventBanner implements GSAdListener 
         
         String appId = serverExtras.get("app_id");
         if(appId == null) {
+        	try {
+	        	ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(),PackageManager.GET_META_DATA);
+	            appId = ai.metaData.get("greystripe_ads_app_id").toString();
+        	} catch(Throwable t) {
+        		Log.e("MoPub", "Could not find greystripe_ads_app_id in meta-data in Android manifest");
+        	}
+        }
+        if(appId == null) {
             Log.d("MoPub", "Greystripe banner ad app_id is missing.");
-            mBannerListener.onAdFailed();
+            if(mBannerListener != null) {
+            	mBannerListener.onAdFailed();
+            }
             return;
         }
         
         mGreystripeAd = new GSMobileBannerAdView(context, appId);
         mGreystripeAd.addListener(this);
-        
         mGreystripeAd.refresh();
     }
 
     @Override
     public void onInvalidate() {
-        mGreystripeAd.removeListener(this);
+    	if(mGreystripeAd != null) {
+    		mGreystripeAd.removeListener(this);
+    	}
     }
 
     /*
@@ -49,7 +62,9 @@ public class GreystripeBanner extends CustomEventBanner implements GSAdListener 
     @Override
     public void onAdClickthrough(GSAd greystripeAd) {
         Log.d("MoPub", "Greystripe banner ad clicked.");
-        mBannerListener.onClick();
+        if(mBannerListener != null) {
+        	mBannerListener.onClick();
+        }
     }
 
     @Override
@@ -60,17 +75,23 @@ public class GreystripeBanner extends CustomEventBanner implements GSAdListener 
     @Override
     public void onFailedToFetchAd(GSAd greystripeAd, GSAdErrorCode errorCode) {
         Log.d("MoPub", "Greystripe banner ad failed to load.");
-        mBannerListener.onAdFailed();
+        if(mBannerListener != null) {
+        	mBannerListener.onAdFailed();
+        }
     }
 
     @Override
     public void onFetchedAd(GSAd greystripeAd) {
         if (mGreystripeAd != null & mGreystripeAd.isAdReady()) {
             Log.d("MoPub", "Greystripe banner ad loaded successfully. Showing ad...");
-            mBannerListener.onAdLoaded();
-            mBannerListener.setAdContentView(mGreystripeAd);
+            if(mBannerListener != null) {
+	            mBannerListener.onAdLoaded();
+	            mBannerListener.setAdContentView(mGreystripeAd);
+            }
         } else {
-            mBannerListener.onAdFailed();
+            if(mBannerListener != null) {
+            	mBannerListener.onAdFailed();
+            }
         }
     }
 

@@ -4,6 +4,8 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.inmobi.androidsdk.IMAdListener;
@@ -35,7 +37,9 @@ public class InMobiBanner extends CustomEventBanner implements IMAdListener {
         }
         
         if (activity == null) {
-            mBannerListener.onAdFailed();
+        	if(mBannerListener != null) {
+        		mBannerListener.onAdFailed();
+        	}
             return;
         }
         
@@ -50,8 +54,18 @@ public class InMobiBanner extends CustomEventBanner implements IMAdListener {
 
         String appId = serverExtras.get("app_id");
         if(appId == null) {
+        	try {
+	        	ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(),PackageManager.GET_META_DATA);
+	            appId = ai.metaData.get("inmobi_ads_app_id").toString();
+        	} catch(Throwable t) {
+        		Log.e("MoPub", "Could not find inmobi_ads_app_id in meta-data in Android manifest");
+        	}
+        }
+        if(appId == null) {
             Log.d("MoPub", "InMobi banner ad app_id is missing.");
-            mBannerListener.onAdFailed();
+        	if(mBannerListener != null) {
+        		mBannerListener.onAdFailed();
+        	}
             return;
         }
         
@@ -74,10 +88,12 @@ public class InMobiBanner extends CustomEventBanner implements IMAdListener {
     public void onAdRequestCompleted(IMAdView adView) {
         if (mInMobiBanner != null && mBannerListener != null) {
             Log.d("MoPub", "InMobi banner ad loaded successfully. Showing ad...");
-            mBannerListener.onAdLoaded();
-            mBannerListener.setAdContentView(mInMobiBanner);
+            if(mBannerListener != null) {
+	            mBannerListener.onAdLoaded();
+	            mBannerListener.setAdContentView(mInMobiBanner);
+            }
         } else if (mBannerListener != null) {
-            mBannerListener.onAdFailed();
+           	mBannerListener.onAdFailed();
         }
     }
 

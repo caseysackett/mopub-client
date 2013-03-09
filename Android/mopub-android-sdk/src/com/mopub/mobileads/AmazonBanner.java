@@ -4,6 +4,8 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.amazon.device.ads.AdError;
@@ -37,7 +39,9 @@ public class AmazonBanner extends CustomEventBanner implements AdListener {
         }
         
         if (activity == null) {
-            mBannerListener.onAdFailed();
+        	if(mBannerListener != null) {
+        		mBannerListener.onAdFailed();
+        	}
             return;
         }
         
@@ -49,10 +53,21 @@ public class AmazonBanner extends CustomEventBanner implements AdListener {
         
         String appId = serverExtras.get("app_id");
         if(appId == null) {
+        	try {
+	        	ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(),PackageManager.GET_META_DATA);
+	            appId = ai.metaData.get("amazon_ads_app_id").toString();
+        	} catch(Throwable t) {
+        		Log.e("MoPub", "Could not find amazon_ads_app_id in meta-data in Android manifest");
+        	}
+        }
+        if(appId == null) {
             Log.d("MoPub", "Amazon banner ad app_id is missing.");
-            mBannerListener.onAdFailed();
+        	if(mBannerListener != null) {
+        		mBannerListener.onAdFailed();
+        	}
             return;
         }
+        
         AdRegistration.setAppKey(context, appId);
 //        AdRegistration.enableTesting(context, true);
 //        AdRegistration.enableLogging(context, true);
@@ -92,13 +107,13 @@ public class AmazonBanner extends CustomEventBanner implements AdListener {
 
 	@Override
 	public void onAdLoaded(AdLayout arg0, AdProperties arg1) {
-      if (mAmazonAdView != null && mBannerListener != null) {
-    	  Log.d("MoPub", "Amazon banner ad loaded successfully. Showing ad...");
-	      mBannerListener.onAdLoaded();
-	      mBannerListener.setAdContentView(mAmazonAdView);
-	  } else if (mBannerListener != null) {
-	      mBannerListener.onAdFailed();
-	  }
+		if (mAmazonAdView != null && mBannerListener != null) {
+			Log.d("MoPub", "Amazon banner ad loaded successfully. Showing ad...");
+			mBannerListener.onAdLoaded();
+			mBannerListener.setAdContentView(mAmazonAdView);
+		} else if (mBannerListener != null) {
+			mBannerListener.onAdFailed();
+		}
 	}
 
 	// NOTE: Amazon does not provide an event about leaving the application
