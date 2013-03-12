@@ -47,7 +47,7 @@ public class AmazonBanner extends CustomEventBanner implements AdListener {
         
         int widthPixels = context.getResources().getDisplayMetrics().widthPixels;
         AdLayout.AdSize adSize = AdLayout.AdSize.AD_SIZE_320x50;
-        if(widthPixels >= 600) adSize = AdLayout.AdSize.AD_SIZE_600x90; 	// Kindle Fire
+        if(widthPixels == 600) adSize = AdLayout.AdSize.AD_SIZE_600x90; 	// Kindle Fire
         if(widthPixels == 728) adSize = AdLayout.AdSize.AD_SIZE_728x90;		// Only if it matches exactly, since 728 scrolls on 800px wide Kindle Fire HD 7"
         if(widthPixels >= 1024) adSize = AdLayout.AdSize.AD_SIZE_1024x50; 	// Kindle Fire HD
         
@@ -69,8 +69,8 @@ public class AmazonBanner extends CustomEventBanner implements AdListener {
         }
         
         AdRegistration.setAppKey(context, appId);
-//        AdRegistration.enableTesting(context, true);
-//        AdRegistration.enableLogging(context, true);
+        //AdRegistration.enableTesting(context, true);
+        //AdRegistration.enableLogging(context, true);
         
         mAmazonAdView = new AdLayout(activity, adSize);
         mAmazonAdView.setListener(this);
