@@ -13,6 +13,7 @@ import com.amazon.device.ads.AdLayout;
 import com.amazon.device.ads.AdListener;
 import com.amazon.device.ads.AdProperties;
 import com.amazon.device.ads.AdRegistration;
+import com.amazon.device.ads.AdSize;
 import com.amazon.device.ads.AdTargetingOptions;
 
 /*
@@ -46,11 +47,11 @@ public class AmazonBanner extends CustomEventBanner implements AdListener {
         }
         
         int widthPixels = context.getResources().getDisplayMetrics().widthPixels;
-        AdLayout.AdSize adSize = AdLayout.AdSize.AD_SIZE_320x50;
-        if(widthPixels == 600) adSize = AdLayout.AdSize.AD_SIZE_600x90; 	// Kindle Fire
-        if(widthPixels == 800) adSize = AdLayout.AdSize.AD_SIZE_600x90; 	// Kindle Fire HD 7"
-        if(widthPixels == 728) adSize = AdLayout.AdSize.AD_SIZE_728x90;		// Only if it matches exactly, since 728 scrolls on 800px wide Kindle Fire HD 7"
-        if(widthPixels >= 1024) adSize = AdLayout.AdSize.AD_SIZE_1024x50; 	// Kindle Fire HD
+        AdSize adSize = AdSize.SIZE_320x50;
+        if(widthPixels == 600) adSize = AdSize.SIZE_600x90; 	// Kindle Fire
+        if(widthPixels == 800) adSize = AdSize.SIZE_600x90; 	// Kindle Fire HD 7"
+        if(widthPixels == 728) adSize = AdSize.SIZE_728x90;		// Only if it matches exactly, since 728 scrolls on 800px wide Kindle Fire HD 7"
+        if(widthPixels >= 1024) adSize = AdSize.SIZE_1024x50; 	// Kindle Fire HD
         
         String appId = serverExtras.get("app_id");
         if(appId == null) {
@@ -69,7 +70,7 @@ public class AmazonBanner extends CustomEventBanner implements AdListener {
             return;
         }
         
-        AdRegistration.setAppKey(context, appId);
+        AdRegistration.setAppKey(appId);
         //AdRegistration.enableTesting(context, true);
         //AdRegistration.enableLogging(context, true);
         
